@@ -1,0 +1,1 @@
+gitpython==1.0.1webkit2png==0.8.2
