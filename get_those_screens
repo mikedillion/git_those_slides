@@ -1,0 +1,14 @@
+#!/bin/bash
+
+folder=$1
+screen_count=0
+
+mkdir -p screens
+
+while read screen; do
+  git --git-dir="$folder.git" reset --hard $screen
+  python -m SimpleHTTPServer &
+  webkit2png --delay 2 --fullsize --filename "screen-$screen_count" --dir screens http://localhost:8000/
+  kill -9 $(ps | grep "SimpleHTTPServer" | grep -v grep | cut -d ' ' -f 1)
+  ((screen_count++))
+done< <(git --git-dir="$folder.git" rev-list HEAD)

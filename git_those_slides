@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import os
+import re
+from itertools import *
+from copy import copy
+from optparse import OptionParser
+from git import Repo
+
+#home = "/Users/miked/Desktop/turfjs-example"
+
+#commits = list(head.iter_items(repo, repo.head))
+#commit_pairs = zip(commits, commits[1:])
+
+#for ref in commit_pairs:
+#    print "https://github.com/mikedillion/turfjs-example/commit/{}#diff-{}".format(ref[0].hexsha, ref[1].hexsha)
+
+#github_url = "https://github.com/mikedillion/turfjs-example.git"
+
+def main():
+
+    usage = "%prog [options] /path/to/file/in/repo"
+
+    parser = OptionParser()
+    (options, args) = parser.parse_args()
+
+    if len(args) == 0:
+        parser.print_usage()
+        return
+
+    file_of_interest = args[0]
+    top_level = os.getcwd() # Assume we're being run from the Git top-level dir
+
+    repo = Repo(top_level)
+    head = repo.head.commit
+
+    # Assume the origin is Github
+    # If it's SSL it will look like: git@github.com:mikedillion/git_those_slides.git
+    # or if it's HTTPS it will look like: https://github.com/mikedillion/git_those_slides.git
+    origin = repo.remotes.origin.url
+    origin = re.sub('\.git$', '', origin)
+    user_and_repo = re.sub('^.*github.com[:|\/]', '', origin)
+
+    commits = list(head.iter_items(repo, repo.head))
+    commit_pairs = zip(commits, commits[1:])
+
+    for ref in commit_pairs:
+        print "https://github.com/{}/commit/{}#diff-{}".format(user_and_repo, ref[0].hexsha, ref[1].hexsha)
+
+if __name__ == '__main__':
+    main()

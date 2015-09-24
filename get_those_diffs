@@ -1,0 +1,10 @@
+#!/bin/bash
+
+diff_count=0
+
+mkdir -p diffs
+
+while read diff; do
+  webkit2png --fullsize --datestamp --dir diffs --selector="div.file" $diff;
+  ((diff_count++))
+done < urls
